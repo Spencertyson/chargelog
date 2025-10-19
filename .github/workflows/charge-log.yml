@@ -2,8 +2,8 @@ name: Charge log (10 min)
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # toutes les 10 minutes
-  workflow_dispatch: {}       # exécution manuelle possible
+    - cron: "*/10 * * * *"   # Toutes les 10 minutes
+  workflow_dispatch: {}       # Lancement manuel possible
 
 permissions:
   contents: write
@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TZ: Europe/Paris
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,6 +23,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install tzdata (fuseaux horaires)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tzdata
+
       - name: Install Playwright
         run: |
           python -m pip install --upgrade pip
@@ -29,7 +35,8 @@ jobs:
           python -m playwright install --with-deps chromium
 
       - name: Run logger once
-        run: python logger_once.py
+        run: |
+          python logger_once.py
 
       - name: Commit & push if changed
         run: |
