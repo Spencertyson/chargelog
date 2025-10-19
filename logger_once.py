@@ -42,7 +42,8 @@ def main():
                 pass
         full_text = page.locator("body").inner_text()
         a, t = extract_type2_counts(full_text)
-        ts = datetime.now(timezone.utc).isoformat()
+        from zoneinfo import ZoneInfo
+     ts = datetime.now(ZoneInfo("Europe/Paris")).isoformat()
         with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
             csv.writer(f).writerow([ts, a, t])
         print(f"[{ts}] TYPE 2 dispo : {a}/{t}")
