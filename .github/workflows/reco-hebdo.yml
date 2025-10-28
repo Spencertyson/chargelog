@@ -1,4 +1,4 @@
-name: Rapport hebdo créneaux 9h–17h
+name: Rapport hebdo + heatmap 9h–17h
 
 on:
   schedule:
@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: chargelog-weekly
+  cancel-in-progress: false
+
 jobs:
   report:
     runs-on: ubuntu-latest
@@ -15,8 +19,10 @@ jobs:
       TZ: Europe/Paris
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (full history)
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -28,19 +34,32 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y tzdata
           python -m pip install --upgrade pip
+          pip install matplotlib numpy
 
-      - name: Run weekly recommendation
-        run: |
-          python recommend_week.py > weekly_report.txt
+      - name: Generate heatmap first
+        run: python heatmap_week.py
 
-      - name: Commit and push report
+      - name: Generate weekly recommendation (with heatmap mention)
+        run: python recommend_week.py > weekly_report.txt
+
+      - name: Commit & push report + images (safe rebase)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add weekly_report.txt
+
+          # 1) Se synchroniser AVANT de stage (évite l'erreur 'index contains uncommitted changes')
+          git fetch origin
+          git pull --rebase --autostash origin main || true
+
+          # 2) Ajouter les nouveaux fichiers
+          git add weekly_report.txt heatmap_week.png heatmap_*.png || true
+
+          # 3) S'il n'y a rien à committer, on sort proprement
           if git diff --staged --quiet; then
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "Mise à jour du rapport hebdomadaire des créneaux 9h–17h"
+
+          # 4) Commit + push
+          git commit -m "Rapport hebdo + heatmap 9h–17h"
           git push origin HEAD:main
