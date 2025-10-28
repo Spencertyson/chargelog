@@ -2,8 +2,8 @@ name: Rapport hebdo créneaux 9h–17h
 
 on:
   schedule:
-    - cron: "30 5 * * 1"   # chaque lundi matin à 07h30 (heure Paris)
-  workflow_dispatch: {}     # lancement manuel possible
+    - cron: "30 5 * * 1"   # lundi 07:30 Europe/Paris (05:30 UTC)
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -11,17 +11,36 @@ permissions:
 jobs:
   report:
     runs-on: ubuntu-latest
+    env:
+      TZ: Europe/Paris
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tzdata
+          python -m pip install --upgrade pip
+
       - name: Run weekly recommendation
-        run: python recommend_week.py > weekly_report.txt
+        run: |
+          python recommend_week.py > weekly_report.txt
+
       - name: Commit and push report
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add weekly_report.txt
-          git commit -m "Mise à jour rapport hebdo créneaux sûrs"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Mise à jour du rapport hebdomadaire des créneaux 9h–17h"
+          git push origin HEAD:main
