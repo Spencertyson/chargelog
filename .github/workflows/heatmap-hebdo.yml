@@ -1,0 +1,51 @@
+name: Heatmap hebdo 9h–17h
+
+on:
+  schedule:
+    - cron: "35 5 * * 1"   # chaque lundi ~07:35 Europe/Paris (05:35 UTC)
+  workflow_dispatch: {}     # lancement manuel possible
+
+permissions:
+  contents: write
+
+jobs:
+  heatmap:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Europe/Paris
+
+    steps:
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tzdata
+          python -m pip install --upgrade pip
+          pip install matplotlib numpy
+
+      - name: Generate weekly heatmap
+        run: |
+          python heatmap_week.py
+
+      - name: Commit & push images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add heatmap_week.png heatmap_*.png || true
+          if git diff --staged --quiet; then
+            echo "No new images to commit."
+            exit 0
+          fi
+          git fetch origin
+          git pull --rebase origin main || true
+          git commit -m "Heatmap hebdo 9h–17h"
+          git push origin HEAD:main
