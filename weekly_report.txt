@@ -1,10 +1,10 @@
-📅 Meilleurs créneaux 22 kW (≥ 90 % de chance d’avoir une prise libre, 9h–17h)
+📅 Meilleurs créneaux 22 kW (seuil 80 %, 09:00–17:00)
 
-🕓 Rapport généré le 28/10/2025 à 19:54 (CET)
+🕓 Rapport généré le 28/10/2025 à 20:15 (CET)
 
-Lundi     : aucun créneau sûr (41 mesures)
-Mardi     : aucun créneau sûr (40 mesures)
-Mercredi  : aucun créneau sûr (19 mesures)
-Jeudi     : aucun créneau sûr (18 mesures)
-Vendredi  : aucun créneau sûr (20 mesures)
-Samedi    : aucun créneau sûr (25 mesures)
+Lundi     : 10:15–10:45 (100 %) [n=5], 16:00–16:45 (100 %) [n=8]
+Mardi     : 11:30–12:00 (100 %) [n=4], 12:45–13:15 (100 %) [n=4], 16:15–16:45 (100 %) [n=6]
+Mercredi  : 12:30–13:45 (100 %) [n=6]
+Jeudi     : 11:15–11:45 (100 %) [n=3], 12:30–12:45 (100 %) [n=3], 13:15–13:45 (100 %) [n=3], 15:45–16:00 (100 %) [n=2]
+Vendredi  : 09:15–09:45 (100 %) [n=3], 13:15–13:45 (100 %) [n=3], 15:45–16:15 (100 %) [n=3]
+Samedi    : 11:30–11:45 (100 %) [n=2], 12:30–12:45 (100 %) [n=2]
